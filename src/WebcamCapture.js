@@ -19,7 +19,7 @@ function WebcamCapture({ onPredict, sceneId }) {
     formData.append("image", blob, "webcam.jpg");
 
     try {
-      const res = await axios.post(`http://localhost:5000/predict/${sceneId}`, formData);
+      const res = await axios.post(`https://quickdraw-backend.onrender.com/predict/${sceneId}`, formData);
       console.log("예측 결과:", res.data);
       onPredict(res.data);
     } catch (err) {
