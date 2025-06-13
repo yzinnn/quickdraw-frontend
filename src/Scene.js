@@ -14,7 +14,7 @@ function Scene({
 }) {
   const [gameState, setGameState] = useState('prompting');
   const [prediction, setPrediction] = useState(null);
-  const fadeHole = sceneId === 'scene3' && prediction;
+  const [fadeOutBlackhole, setFadeOutBlackhole] = useState(false);
 
 
   // sceneId 바뀔 때 상태 초기화
@@ -30,6 +30,15 @@ function Scene({
       return () => clearTimeout(timer);
     }
   }, [gameState, onComplete, nextScene]);
+
+  useEffect(() => {
+    if (sceneId === 'scene3' && gameState === 'result') {
+      const timeout = setTimeout(() => setFadeOutBlackhole(true), 100);
+      return () => clearTimeout(timeout);
+    } else {
+        setFadeOutBlackhole(false);
+    }
+  }, [sceneId, gameState]);
 
   const handleFirstClick = () => {
     setGameState('drawing');
@@ -58,7 +67,7 @@ function Scene({
         animationClass = 'scene1-effect bounce-diag-out';
       } else {
         effectImage = `/images/${prediction}.png`;
-        animationClass = 'scene1-effect fly-diag-out';
+        animationClass = 'scene1-effect bounce-diag-out';
       }
 
       return (
@@ -78,7 +87,7 @@ function Scene({
         <img
           src={effectImage}
           alt={prediction}
-          className="effect-overlay scene2-effect bounce-diag-out"
+          className="effect-overlay scene2-effect fly-diag-out"
         />
       );
     }
@@ -165,11 +174,19 @@ function Scene({
       )}
       {renderGameState()}
 
-      {sceneId === 'scene3' && gameState !== 'drawing' && (
+      {sceneId === 'scene3' && gameState === 'prompting' && (
           <img
           src="/images/blackhole.png"
-          className={`scene3-effect blackhole ${prediction ? 'fade-out' : ''}`}
+          className={`scene3-effect blackhole`}
           alt="blackhole"
+          />
+      )}
+      
+      {sceneId === 'scene3' && gameState === 'result' && (
+          <img
+          src="/images/blackhole.png"
+          className={"scene3-effect blackhole fade-out"}
+          alt="blackhole fade-out"
           />
       )}
 
@@ -178,3 +195,4 @@ function Scene({
 }
 
 export default Scene;
+

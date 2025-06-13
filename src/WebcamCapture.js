@@ -31,7 +31,7 @@ function WebcamCapture({ onPredict, sceneId }) {
     }
   };
 
-  // 스케치북 레이아웃: 기존의 div/인라인 스타일 대신 CSS 클래스로 제어하도록 구조를 변경했습니다.
+  // 스케치북 레이아웃: 기존의 div/인라인 스타일 대신 CSS 클래스로 제어하도록 구조를 변경.
   return (
     <>
       <Webcam

@@ -1,11 +1,20 @@
 /* ===== [공통 기본 스타일] ===== */
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap');
+
 body, html, #root {
   margin: 0; padding: 0;
   width: 100%; height: 100%;
   overflow: hidden;
-  font-family: 'Arial', sans-serif;
+  font-family: 'Gowun Dodum', sans-serif;
   background-color: #f0f0f0;
 }
+
+.fade-out {
+  opacity: 0;
+  transition: opacity 1.5s ease-in-out;
+  pointer-events: none;
+}
+
 .app-container {
   width: 100%; height: 100%;
   display: flex; justify-content: center; align-items: center;
@@ -30,7 +39,7 @@ body, html, #root {
 .pencil-image {
   position: absolute;
   left: 600px; bottom: 50px;
-  width: 80px;
+  width: 130px;
   z-index: 55;
 }
 
@@ -54,11 +63,36 @@ body, html, #root {
 }
 .speech-bubble--top { top: 30px; bottom: auto; }
 
-.start-scene-button,
-.final-scene-button {
+.start-scene-button 
+{
+  font-family: 'Gowun Dodum', sans-serif;
   position: absolute;
-  bottom: 50px; left: 50%;
-  transform: translateX(-50%);
+  bottom: 50px;
+  right: 80px;  /* 여기로 붙여줘 */
+  left: auto;
+  transform: none;  /* 중앙정렬 제거 */
+  padding: 15px 40px;
+  font-size: 1.8em;
+  font-weight: bold;
+  color: white;
+  background-color: #ff8c00;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  z-index: 110;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s;
+}
+.start-scene-button:hover {
+  transform: scale(1.02); /* translateX 제거됨에 따라 수정 */
+}
+
+.final-scene-button
+{
+  font-family: 'Gowun Dodum', sans-serif;
+  position: absolute;
+  bottom: 50px; right: 10%;
+  transform: translateX(-0%);
   padding: 15px 40px;
   font-size: 1.8em;
   font-weight: bold;
@@ -73,7 +107,7 @@ body, html, #root {
 }
 .start-scene-button:hover,
 .final-scene-button:hover {
-  transform: translateX(-50%) scale(1.05);
+  transform: scale(1.05);
 }
 .scene-next-button {
   position: absolute;
@@ -124,28 +158,40 @@ body, html, #root {
 }
 .webcam-capture-button:disabled { background-color: #ccc; }
 
-/* ===== [Scene1 효과] ===== */
-.scene1-effect.fly-diag-out {
-  animation: fly-diag-out 2.5s ease-in forwards;
+/* ===== [Scene1 효과 - 수정된 포물선] ===== */
+.scene1-effect.bounce-diag-out {
+  position: absolute;
+  bottom: 50px;
+  left: 180px;
   width: 150px;
+  animation: bounce-parabola 2.8s ease-in-out forwards;
+  z-index: 100;
 }
-@keyframes fly-diag-out {
-  0% { bottom: 50px; left: 180px; opacity: 1; }
-  100% { bottom: 800px; left: 1000px; opacity: 0; }
+@keyframes bounce-parabola {
+  0% { transform: translate(70px, -60px); opacity: 1; }
+  20% { transform: translate(150px, -120px); }
+  40% { transform: translate(300px, -240px); }
+  60% { transform: translate(450px, -300px); }
+  80% { transform: translate(600px, -330px); }
+  100% { transform: translate(750px, -360px); opacity: 1; }
 }
 
-/* ===== [Scene2 효과 - 깡총깡총 포물선] ===== */
-.scene2-effect.bounce-diag-out {
-  width: 120px;
+/* ===== [Scene2 효과 - 기존] ===== */
+.scene2-effect.fly-diag-out {
+  position: absolute;
+  top: 50px;
+  left: 180px;
+  width: 150px;
   animation: bounce-diag-out 3s forwards;
+  z-index: 100;
 }
 @keyframes bounce-diag-out {
-  0% { bottom: 50px; left: 180px; opacity: 1; }
-  25% { bottom: 300px; left: 400px; }
-  40% { bottom: 50px; left: 550px; }
-  60% { bottom: 250px; left: 750px; }
-  75% { bottom: 50px; left: 900px; }
-  100% { bottom: 400px; left: 1200px; opacity: 0; }
+  0% { top: 50px; left: 180px; opacity: 1; }
+  25% { top: 300px; left: 400px; }
+  40% { top: 50px; left: 550px; }
+  60% { top: 250px; left: 750px; }
+  75% { top: 50px; left: 900px; }
+  100% { top: 400px; left: 1200px; opacity: 0; }
 }
 
 /* ===== [Scene3 효과 - 나무 커짐 + 구멍 사라짐] ===== */
@@ -157,38 +203,35 @@ body, html, #root {
   transition: opacity 1.5s ease-in-out;
   z-index: 10;
 }
-.scene3-effect.hole-image.fade-out {
+.scene3-effect.hole-image.fade-out { 
   opacity: 0;
+  transition: opacity 2.5s ease-in-out 0.2s;;
 }
 .scene3-effect.tree-effect {
   position: absolute;
-  bottom: 0;
-  left: calc(50% + 40px);
+  bottom: 20px;
+  left: 40%;
+  transform: translateX(-50%);
   height: 50vh;
   z-index: 20;
   animation: growTree 2.5s ease-in-out forwards;
 }
 @keyframes growTree {
-  0% {
-    transform: scaleY(0.3) scaleX(0.3);
-    opacity: 0;
-  }
-  100% {
-    transform: scaleY(2.0) scaleX(2.0);
-    opacity: 1;
-  }
+  0% { transform: scaleY(0.3) scaleX(0.3); opacity: 0; }
+  100% { transform: scaleY(2.0) scaleX(2.0); opacity: 1; }
 }
 
 /* Scene3 전용: 시작 시 등장하는 구멍 */
 .scene3-effect.blackhole {
   position: absolute;
-  top: 25%;
-  left: 50%;
+  top: 15%;
+  left: 60%;
   transform: translateX(-50%);
   width: 320px;
   transition: opacity 1.5s ease-in-out;
   z-index: 9;
 }
-.scene3-effect.blackhole.fade-out {
-  opacity: 0;
+
+.hidden {
+  display: none !important;
 }
