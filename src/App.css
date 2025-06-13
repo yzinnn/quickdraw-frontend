@@ -191,7 +191,7 @@ body, html, #root {
   40% { top: 50px; left: 550px; }
   60% { top: 250px; left: 750px; }
   75% { top: 50px; left: 900px; }
-  100% { top: 400px; left: 1200px; opacity: 0; }
+  100% { top: 400px; left: 1200px; opacity: 1; }
 }
 
 /* ===== [Scene3 효과 - 나무 커짐 + 구멍 사라짐] ===== */
