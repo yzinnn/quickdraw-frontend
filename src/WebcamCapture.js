@@ -1,3 +1,4 @@
+// WebcamCapture.js
 import React, { useRef, useState } from "react";
 import Webcam from "react-webcam";
 import axios from "axios";
@@ -19,7 +20,7 @@ function WebcamCapture({ onPredict, sceneId }) {
     formData.append("image", blob, "webcam.jpg");
 
     try {
-      const res = await axios.post(`https://quickdraw-backend.onrender.com/predict/${sceneId}`, formData);
+      const res = await axios.post(`http://localhost:5000/predict/${sceneId}`, formData);
       console.log("예측 결과:", res.data);
       onPredict(res.data);
     } catch (err) {
@@ -30,34 +31,24 @@ function WebcamCapture({ onPredict, sceneId }) {
     }
   };
 
+  // 스케치북 레이아웃: 기존의 div/인라인 스타일 대신 CSS 클래스로 제어하도록 구조를 변경했습니다.
   return (
-    <div style={{ display: "flex", justifyContent: "flex-end", padding: "1rem" }}>
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-        <Webcam
-          ref={webcamRef}
-          screenshotFormat="image/jpeg"
-          width={480}
-          height={360}
-          className="rounded-xl shadow-lg"
-        />
-        <button
-          onClick={captureAndPredict}
-          disabled={loading}
-          style={{
-            marginTop: "16px",
-            padding: "12px 24px",
-            fontSize: "18px",
-            backgroundColor: "#3B82F6",
-            color: "#fff",
-            borderRadius: "0.5rem",
-            width: "100%",
-            maxWidth: "480px",
-          }}
-        >
-          {loading ? "예측 중..." : "이 그림으로 결정!"}
-        </button>
-      </div>
-    </div>
+    <>
+      <Webcam
+        ref={webcamRef}
+        screenshotFormat="image/jpeg"
+        width="100%"
+        height="100%"
+        className="webcam-view"
+      />
+      <button
+        onClick={captureAndPredict}
+        disabled={loading}
+        className="capture-button"
+      >
+        {loading ? "판독 중..." : "마술 연필 짠!"}
+      </button>
+    </>
   );
 }
 

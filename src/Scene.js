@@ -1,139 +1,178 @@
+// Scene.js
 import React, { useState, useEffect } from 'react';
 import WebcamCapture from './WebcamCapture';
 
-function Scene({ sceneId, promptBackgroundImg, characterImg, promptDialog, drawingDialog, classes, onComplete, nextScene }) {
+function Scene({
+  sceneId,
+  promptBackgroundImg,
+  characterImg,
+  promptDialog,
+  drawingDialog,
+  classes,
+  onComplete,
+  nextScene
+}) {
   const [gameState, setGameState] = useState('prompting');
   const [prediction, setPrediction] = useState(null);
+  const fadeHole = sceneId === 'scene3' && prediction;
 
-  // 예측 처리 함수
-  const handlePrediction = (result) => {
-    console.log(`[${sceneId}] ✅ 예측 결과:`, result);
 
-    if (result && classes.includes(result.label)) {
-      setPrediction(result.label);
-      setGameState('result');
-    } else {
-      console.warn(`[${sceneId}] ❌ 예측 실패:`, result?.label, '허용된 label:', classes);
-      alert('인식에 실패했어요. 그림을 더 선명하게 보여주세요!');
-    }
-  };
-  
+  // sceneId 바뀔 때 상태 초기화
   useEffect(() => {
-    console.log(`[🔁 sceneId 변경됨 → 상태 초기화] sceneId: ${sceneId}`);
     setGameState('prompting');
     setPrediction(null);
   }, [sceneId]);
 
-  // 결과 상태에서 4초 후 다음 씬으로 전환
+  // 결과 후 자동 전환
   useEffect(() => {
     if (gameState === 'result') {
-      console.log(`[${sceneId}] 🎬 result 상태 진입 → 4초 타이머 시작`);
-      const timer = setTimeout(() => {
-        console.log(`[${sceneId}] ✅ 다음 씬으로 이동: ${nextScene}`);
-        onComplete(nextScene);
-      }, 4000);
+      const timer = setTimeout(() => onComplete(nextScene), 3500);
       return () => clearTimeout(timer);
     }
   }, [gameState, onComplete, nextScene]);
 
-  // 버튼 누르면 drawing 상태로 진입
   const handleFirstClick = () => {
-    setGameState('reacting');
-    setTimeout(() => {
-      setGameState('drawing');
-    }, 2000);
+    setGameState('drawing');
   };
 
-  // 상태별 화면 렌더링
-  const renderSceneContent = () => {
-    switch (gameState) {
-      case 'reacting':
+  const handlePrediction = (pred) => {
+    if (pred && classes.includes(pred.label)) {
+      setPrediction(pred.label);
+      setGameState('result');
+    } else {
+      alert('인식에 실패했어요. 그림을 더 선명하게 보여주세요!');
+      setGameState('drawing');
+    }
+  };
+
+  // 효과 렌더링
+  const renderEffects = () => {
+    if (!prediction) return null;
+
+    if (sceneId === 'scene1') {
+      let effectImage = '';
+      let animationClass = '';
+
+      if (prediction === 'shoe') {
+        effectImage = '/images/winged-shoes.png';
+        animationClass = 'scene1-effect bounce-diag-out';
+      } else {
+        effectImage = `/images/${prediction}.png`;
+        animationClass = 'scene1-effect fly-diag-out';
+      }
+
+      return (
+        <img
+          src={effectImage}
+          alt={prediction}
+          className={`effect-overlay ${animationClass}`}
+          onError={(e) => (e.target.style.display = 'none')}
+        />
+      );
+    }
+
+    if (sceneId === 'scene2') {
+      const effectImage = prediction === 'shoe' ? '/images/winged-shoes.png' : `/images/${prediction}.png`;
+
+      return (
+        <img
+          src={effectImage}
+          alt={prediction}
+          className="effect-overlay scene2-effect bounce-diag-out"
+        />
+      );
+    }
+
+    if (sceneId === 'scene3') {
+      if (prediction === 'tree') {
         return (
           <>
-            <img src={characterImg} alt="character" className="character" />
-            <div className="speech-bubble">마술 연필로 그림을 그려서 해결해보자!!</div>
-          </>
-        );
-
-      case 'drawing':
-        return (
-          <>
-            <div className="speech-bubble updated-bubble">{drawingDialog}</div>
-            <div className="webcam-area">
-              <WebcamCapture onPredict={handlePrediction} sceneId={sceneId} />
-            </div>
-          </>
-        );
-
-      case 'result':
-        let effectImg = null;
-        let characterStyle = {};
-        let effectStyle = {};
-
-        // 결과별 효과 이미지
-        const effectMap = {
-          dragon: '/images/dragon.png',
-          shoe: '/images/winged-shoes.png',
-          angel: '/images/wings.png',
-          rabbit: '/images/rabbit.png',
-          mouse: '/images/mouse.png',
-          airplane: '/images/airplane.png',
-          cloud: '/images/cloud.png',
-          tree: '/images/tree.png',
-          bandage: '/images/bandage.png',
-        };
-
-        if (['dragon', 'shoe', 'angel'].includes(prediction)) {
-          characterStyle = { display: 'none' };
-        }
-
-        effectImg = effectMap[prediction] || null;
-
-        return (
-          <>
-            <h1 className="result-text">{prediction}!</h1>
             <img
-              src={characterImg}
-              alt="character"
-              className={`character ${prediction}-effect`}
-              style={characterStyle}
+              src="/images/hole.png"
+              alt="구멍"
+              className="scene3-effect hole-image fade-out"
             />
-            {effectImg && (
-              <img
-                src={effectImg}
-                alt="effect"
-                className={`effect-overlay ${prediction}-effect`}
-                style={effectStyle}
-              />
-            )}
+            <img
+              src="/images/tree.png"
+              alt="나무"
+              className="scene3-effect tree-effect"
+            />
           </>
         );
+      } else if (prediction === 'cloud') {
+        return (
+          <>
+            <img src="/images/cloud1.png" alt="cloud1" className="effect-overlay cloud-fade-in-1" />
+            <img src="/images/cloud2.png" alt="cloud2" className="effect-overlay cloud-fade-in-2" />
+            <img src="/images/cloud3.png" alt="cloud3" className="effect-overlay cloud-fade-in-3" />
+          </>
+        );
+      } else if (prediction === 'bandage') {
+        return (
+          <img
+            src="/images/bandage.png"
+            alt="bandage"
+            className="effect-overlay expand-cover"
+            onError={(e) => (e.target.style.display = 'none')}
+          />
+        );
+      }
+    }
 
+    return null;
+  };
+
+  const renderGameState = () => {
+    switch (gameState) {
       case 'prompting':
-      default:
         return (
           <>
             <img src={characterImg} alt="character" className="character" />
             <div className="speech-bubble">{promptDialog}</div>
-            <button className="start-button updated-button" onClick={handleFirstClick}>
+            <button className="scene-next-button" onClick={handleFirstClick}>
               다음
             </button>
           </>
         );
+      case 'drawing':
+        return (
+          <div className="drawing-container">
+            <div className="speech-bubble speech-bubble--top">{drawingDialog}</div>
+            <div className="sketchbook-layout">
+              <img src="/images/sketchbook_bg.png" alt="스케치북 배경" className="sketchbook-base-image" />
+              <div className="webcam-overlay-area">
+                <WebcamCapture onPredict={handlePrediction} sceneId={sceneId} />
+              </div>
+            </div>
+          </div>
+        );
+      case 'result':
+        return renderEffects();
+      default:
+        return null;
     }
-  };
-
-  // 배경 이미지 결정
-  const getBackgroundImage = () => {
-    if (gameState === 'drawing') {
-      return `url('/images/sketchbook_background.png')`;
-    }
-    return `url(${promptBackgroundImg})`;
   };
 
   return (
-    <div className="scene-container" style={{ backgroundImage: getBackgroundImage() }}>
-      {renderSceneContent()}
+    <div
+      className="scene-container"
+      style={{
+        backgroundImage: gameState === 'drawing' ? 'none' : `url(${promptBackgroundImg})`
+      }}
+    >
+      {gameState !== 'drawing' && gameState !== 'result' && (
+        <img src={characterImg} alt="character" className="character" />
+      )}
+      {renderGameState()}
+
+      {sceneId === 'scene3' && gameState !== 'drawing' && (
+          <img
+          src="/images/blackhole.png"
+          className={`scene3-effect blackhole ${prediction ? 'fade-out' : ''}`}
+          alt="blackhole"
+          />
+      )}
+
     </div>
   );
 }

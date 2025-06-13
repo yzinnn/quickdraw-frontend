@@ -1,3 +1,4 @@
+// StartScene.js
 import React, { useState, useRef } from 'react';
 import './App.css';
 
@@ -44,16 +45,15 @@ function StartScene({ onComplete }) {
         <img
           src="/images/pencil.png"
           alt="pencil"
-          className="effect-overlay"
-          style={{ left: '600px', bottom: '50px', width: '80px' }}
+          className="pencil-image" 
         />
       )}
       
-      {/* 말풍선은 항상 보이도록 하되, 내용만 변경 */}
-      <div className="speech-bubble updated-bubble">{renderSpeech()}</div>
+      {/* 💥 대사창을 위로 올리기 위해 speech-bubble--top 클래스 추가 */}
+      <div className="speech-bubble speech-bubble--top">{renderSpeech()}</div>
 
-      {/* 버튼 텍스트와 기능은 단계에 따라 변경 */}
-      <button className="start-button updated-button" onClick={handleInteraction}>
+      {/* 💥 버튼이 겹치지 않도록 StartScene 전용 클래스 지정 */}
+      <button className="start-scene-button" onClick={handleInteraction}>
         {step === 0 ? '시작' : '다음'}
       </button>
     </div>

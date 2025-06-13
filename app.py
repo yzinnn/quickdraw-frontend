@@ -11,7 +11,7 @@ import json
 app = Flask(__name__)
 CORS(app)
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("cpu")  # ✅ 강제로 CPU 고정
 
 # 🎯 CNN 모델 정의
 class DeepCNN(nn.Module):
@@ -64,8 +64,8 @@ for i in range(1, 4):
         label_data = json.load(f)
         class_list = label_data["classes"]
 
-    model = DeepCNN(num_classes=len(class_list)).to(device)
-    model.load_state_dict(torch.load(model_path, map_location=device))
+    model = DeepCNN(num_classes=len(class_list))
+    model.load_state_dict(torch.load(model_path, map_location="cpu"))  # ✅ GPU 저장된 모델도 안전하게 불러오기
     model.eval()
     scene_model_map[scene_id] = (model, class_list)
     print(f"✅ {scene_id} 로드 완료! 클래스: {class_list}")
@@ -90,7 +90,7 @@ def predict(scene_id):
 
     img_bytes = request.files['image'].read()
     img = Image.open(BytesIO(img_bytes)).convert("RGB")
-    x = transform(img).unsqueeze(0).to(device)
+    x = transform(img).unsqueeze(0)
 
     with torch.no_grad():
         output = model(x)
